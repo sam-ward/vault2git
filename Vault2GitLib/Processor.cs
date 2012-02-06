@@ -30,6 +30,12 @@ namespace Vault2Git.Lib
         public string VaultUser;
         public string VaultPassword;
         public string VaultRepository;
+        public string VaultProxyServer;
+        public string VaultProxyPort;
+        public string VaultProxyUser;
+        public string VaultProxyPassword;
+        public string VaultProxyDomain;
+
 
         public string GitDomainName;
 
@@ -339,21 +345,24 @@ namespace Vault2Git.Lib
                                                                                 0,
                                                                                 (int)rowsRetRecur,
                                                                                 out labelItems);
+            
             try
             {
                 int ticks = 0;
-            
-                foreach (VaultLabelItemX currItem in labelItems)
+                if (labelItems != null)
                 {
-                    if (!_txidMappings.ContainsKey(currItem.TxID))
-                        continue;
-
-                    string gitCommitId = _txidMappings.Where(s => s.Key.Equals(currItem.TxID)).First().Value;
-
-                    if (gitCommitId != null && gitCommitId.Length > 0)
+                    foreach (VaultLabelItemX currItem in labelItems)
                     {
-                        string gitLabelName = Regex.Replace(currItem.Label, "[\\W]", "_");
-                        ticks += gitAddTag(currItem.TxID + "_" + gitLabelName, gitCommitId, currItem.Comment);
+                        if (!_txidMappings.ContainsKey(currItem.TxID))
+                            continue;
+
+                        string gitCommitId = _txidMappings.Where(s => s.Key.Equals(currItem.TxID)).First().Value;
+
+                        if (gitCommitId != null && gitCommitId.Length > 0)
+                        {
+                            string gitLabelName = Regex.Replace(currItem.Label, "[\\W]", "_");
+                            ticks += gitAddTag(currItem.TxID + "_" + gitLabelName, gitCommitId, currItem.Comment);
+                        }
                     }
                 }
                 
@@ -373,6 +382,9 @@ namespace Vault2Git.Lib
 
         private int vaultGet(string repoPath, long version, long txId)
         {
+
+           
+            
             var ticks = Environment.TickCount;
             //apply version to the repo folder
             GetOperations.ProcessCommandGetVersion(
@@ -513,6 +525,7 @@ namespace Vault2Git.Lib
         {
             //get last string
             var stringToParse = msg.Last();
+            
             //search for version tag
             var versionString = stringToParse.Split(new string[] {VaultTag}, StringSplitOptions.None).LastOrDefault();
             if (null == versionString)
@@ -613,6 +626,11 @@ namespace Vault2Git.Lib
         private int vaultLogin()
         {
             var ticks = Environment.TickCount;
+            ServerOperations.client.LoginOptions.ProxyServer = this.VaultProxyServer;
+            ServerOperations.client.LoginOptions.ProxyPort = this.VaultProxyPort;
+            ServerOperations.client.LoginOptions.ProxyUser = this.VaultProxyUser;
+            ServerOperations.client.LoginOptions.ProxyPassword = this.VaultProxyPassword;
+            ServerOperations.client.LoginOptions.ProxyDomain = this.VaultProxyDomain;
             ServerOperations.client.LoginOptions.URL = string.Format("http://{0}/VaultService", this.VaultServer);
             ServerOperations.client.LoginOptions.User = this.VaultUser;
             ServerOperations.client.LoginOptions.Password = this.VaultPassword;

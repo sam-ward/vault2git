@@ -131,6 +131,11 @@ namespace Vault2Git.CLI
                                     VaultRepository = ConfigurationManager.AppSettings["Vault.Repo"],
                                     VaultUser = ConfigurationManager.AppSettings["Vault.User"],
                                     VaultPassword = ConfigurationManager.AppSettings["Vault.Password"],
+                                    VaultProxyServer = ConfigurationManager.AppSettings["Vault.ProxyServer"],
+                                    VaultProxyPassword = ConfigurationManager.AppSettings["Vault.ProxyPassword"],
+                                    VaultProxyUser = ConfigurationManager.AppSettings["Vault.ProxyUser"],
+                                    VaultProxyPort = ConfigurationManager.AppSettings["Vault.ProxyPort"],
+                                    VaultProxyDomain = ConfigurationManager.AppSettings["Vault.ProxyDomain"],
                                     Progress = ShowProgress,
                                     SkipEmptyCommits = param.SkipEmptyCommits
                                 };
